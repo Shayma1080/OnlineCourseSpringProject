@@ -1,12 +1,17 @@
 package org.intecbrussel.model;
 
 import jakarta.persistence.*;
-import jakarta.transaction.Status;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
-public class Enrollment {
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
+public class Enrollment { // inschrijving
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -22,7 +27,7 @@ public class Enrollment {
 
     private LocalDateTime enrolledAt;
 
-    @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.STRING) // vertelt aan JPA de enumwaarde o te slaan
     private Status status;
 
 
