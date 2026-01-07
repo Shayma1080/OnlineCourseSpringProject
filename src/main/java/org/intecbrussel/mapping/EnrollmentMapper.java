@@ -5,7 +5,7 @@ import org.intecbrussel.model.Enrollment;
 
 public class EnrollmentMapper {
 
-    public static EnrollmentResponse toEnrollment(Enrollment enrollment) {
+    public static EnrollmentResponse toResponse(Enrollment enrollment) {
         EnrollmentResponse response = new EnrollmentResponse();
         response.setId(enrollment.getId());
         response.setStudentName(response.getStudentName());
