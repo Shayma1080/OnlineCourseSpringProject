@@ -1,4 +1,4 @@
-package controller;
+package org.intecbrussel.controller;
 
 import org.intecbrussel.dto.AuthResponse;
 import org.intecbrussel.dto.LoginRequest;
