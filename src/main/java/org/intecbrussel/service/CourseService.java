@@ -26,7 +26,7 @@ public class CourseService {
         this.userRepository = userRepository;
     }
 
-    public CourseResponse createCourse(CourseRequest request, Long instructorId) {
+    public CourseResponse createCourse(Long instructorId, CourseRequest request) {
         User instructor = userRepository.findById(instructorId)
                 .orElseThrow(()-> new RuntimeException("instructor not found"));
         if(instructor.getRole() != Role.INSTRUCTOR && instructor.getRole() != Role.ADMIN) {
@@ -40,6 +40,10 @@ public class CourseService {
     public CourseResponse updateCourse(Long courseId, CourseRequest request, Long instructorId) {
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(()-> new RuntimeException("course not found"));
+
+        if(course.getEnrollments() != null){
+            throw new RuntimeException("Course has no instructor, cannot update");
+        }
 
         if(!course.getInstructor().getId().equals(instructorId)) {
             throw new RuntimeException("You can't update the course");

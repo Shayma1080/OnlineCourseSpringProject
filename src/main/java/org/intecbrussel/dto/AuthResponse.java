@@ -13,6 +13,7 @@ public class AuthResponse {
     private String token;
     private long id;
     private String email; // of user
+    private String userName;
     private String role; // STUDENT / INSTRUCTOR / ADMIN
     private LocalDateTime expiresAt;
 }

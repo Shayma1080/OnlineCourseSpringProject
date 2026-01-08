@@ -16,12 +16,25 @@ public class CourseMapper {
         response.setId(course.getId());
         response.setTitle(course.getTitle());
         response.setDescription(course.getDescription());
-        response.setInstructorName(course.getInstructor().getEmail());
-        response.setStudentName(
-        course.getEnrollments().stream()
-                .map(e -> e.getStudent().getEmail())
-                .collect(Collectors.toList())
-        );
+         if(course.getInstructor() != null){
+             response.setInstructorName(course.getInstructor().getEmail());
+         }else{
+             response.setInstructorName("No instructor");
+         }
+         response.setStudentName(
+                 course.getEnrollments() != null?
+                         course.getEnrollments().stream()
+                                 .map(e-> e.getStudent().getEmail())
+                                 .collect(Collectors.toList())
+                         : new ArrayList<>()
+
+         );
+//        response.setInstructorName(course.getInstructor().getEmail());
+//        response.setStudentName(
+//        course.getEnrollments().stream()
+//                .map(e -> e.getStudent().getEmail())
+//                .collect(Collectors.toList())
+//        );
 
         return response;
     }

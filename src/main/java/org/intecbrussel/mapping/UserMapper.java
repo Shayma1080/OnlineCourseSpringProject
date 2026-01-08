@@ -9,6 +9,7 @@ public class UserMapper {
         UserResponse response = new UserResponse();
         response.setId(user.getId());
         response.setEmail(user.getEmail());
+        response.setUsername(user.getFirstName() + " " + user.getLastName());
         response.setRole( user.getRole().name());
         return response;
     }

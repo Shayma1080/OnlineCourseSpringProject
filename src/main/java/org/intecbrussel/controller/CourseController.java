@@ -14,6 +14,10 @@ public class CourseController {
     @Autowired
     private CourseService courseService;
 
+    public CourseController(CourseService courseService) {
+        this.courseService = courseService;
+    }
+
     @GetMapping
     public List<CourseResponse> getCourses(){
         return courseService.getAllCourses();
@@ -24,18 +28,18 @@ public class CourseController {
         return courseService.getCourseById(id);
     }
 
-    @PostMapping
-    public CourseResponse createCourse(@RequestBody CourseRequest request, Long id){
-        return courseService.createCourse(request,id);
+    @PostMapping("/instructorId")
+    public CourseResponse createCourse( @RequestParam Long instructorId, @RequestBody CourseRequest request){
+        return courseService.createCourse(instructorId, request);
     }
 
-    @PutMapping("/{id}")
-    public CourseResponse updateCourse(@PathVariable Long courseId, @RequestBody CourseRequest request, Long instructorId){
+    @PutMapping("/{courseId}")
+    public CourseResponse updateCourse(@PathVariable Long courseId, @RequestBody CourseRequest request, @RequestParam Long instructorId){
         return courseService.updateCourse(courseId,request,instructorId);
     }
 
-    @DeleteMapping("/{id}")
-    public void cancelCourse(@PathVariable Long courseId, Long adminId){
+    @DeleteMapping("/{courseId}")
+    public void cancelCourse(@PathVariable Long courseId, @RequestParam Long adminId){
         courseService.deleteCourse(courseId,adminId);
     }
 

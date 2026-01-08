@@ -21,9 +21,17 @@ public class AuthService {
 
     // Registreren
     public AuthResponse register(RegisterRequest request) {
+
+        if(!request.getPassword().equals(request.getConfirmPassword())) {
+            throw new RuntimeException("Passwords do not match");
+        }
+
         User user = new User();
         user.setEmail(request.getEmail());
         user.setPassword(request.getPassword());
+        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
+        user.setUsername(request.getFirstName() + " " + request.getLastName());
         user.setRole(Role.STUDENT);
         userRepository.save(user);
 
@@ -31,12 +39,16 @@ public class AuthService {
         response.setId(user.getId());
         response.setEmail(user.getEmail());
         response.setRole(user.getRole().name());
+        response.setUserName(user.getFirstName() +  " " + user.getLastName());
+//        response.setToken(null);
+//        response.setExpiresAt(null);
 
         return response;
     }
 
     // Login
     public AuthResponse login(LoginRequest request) {
+
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("Gebruiker niet gevonden"));
 
@@ -47,7 +59,13 @@ public class AuthService {
         AuthResponse response = new AuthResponse();
         response.setId(user.getId());
         response.setEmail(user.getEmail());
+        response.setUserName(user.getFirstName() +  " " + user.getLastName());
         response.setRole(user.getRole().name());
+//        response.setToken(null);
+//        response.setExpiresAt(null);
         return response;
+
+
     }
+
 }
