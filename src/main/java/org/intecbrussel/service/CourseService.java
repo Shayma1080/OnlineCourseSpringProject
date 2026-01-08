@@ -70,4 +70,9 @@ public class CourseService {
                 .map(CourseMapper::toResponse)
                 .toList();
     }
+
+    public CourseResponse getCourseById(Long courseId) {
+        Course course = courseRepository.getCourseById(courseId);
+        return CourseMapper.toResponse(course);
+    }
 }
