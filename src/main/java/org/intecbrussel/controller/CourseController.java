@@ -28,8 +28,8 @@ public class CourseController {
         return courseService.getCourseById(id);
     }
 
-    @PostMapping("/instructorId")
-    public CourseResponse createCourse( @RequestParam Long instructorId, @RequestBody CourseRequest request){
+    @PostMapping("/{instructorId}")
+    public CourseResponse createCourse( @PathVariable Long instructorId, @RequestBody CourseRequest request){
         return courseService.createCourse(instructorId, request);
     }
 

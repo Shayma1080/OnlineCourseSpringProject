@@ -1,10 +1,13 @@
 package org.intecbrussel.controller;
 
+import org.intecbrussel.dto.EnrollmentResponse;
 import org.intecbrussel.model.Enrollment;
 import org.intecbrussel.service.CourseService;
 import org.intecbrussel.service.EnrollmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/")
@@ -17,27 +20,27 @@ public class EnrollmentController {
     }
 
     @PostMapping("/courses/{studentId}/enroll")
-    public void enrollCourse(@PathVariable Long studentId, Long courseId){
+    public void enrollCourse(@PathVariable Long studentId,@RequestParam Long courseId){
         enrollmentService.enrollStudent(studentId, courseId);
     }
 
     @GetMapping("/enrollments/me")
-    public void getEnrollmentStudent(@PathVariable Long studentId){
-        enrollmentService.getEnrollmentForStudent(studentId);
+    public List<EnrollmentResponse> getEnrollmentStudent(@RequestParam Long studentId){
+        return enrollmentService.getEnrollmentForStudent(studentId);
     }
 
     @GetMapping("/instructor/enrollments")
-    public void getEnrollmentsInstructor(@PathVariable Long instructorId){
-        enrollmentService.getEnrollmentForStudent(instructorId);
+    public List<EnrollmentResponse> getEnrollmentsInstructors(@RequestParam Long instructorId){
+        return enrollmentService.getEnrollmentInstructor(instructorId);
     }
 
     @GetMapping("/admin/enrollments")
-    public void getEnrollmentsAdmin(){
-        enrollmentService.getAllEnrollments();
+    public List<EnrollmentResponse> getEnrollmentsAdmin(){
+        return enrollmentService.getAllEnrollments();
     }
 
-    @DeleteMapping("/enrollments/{studentId}")
-    public void deleteEnrollment(@PathVariable Long studentId){
-        enrollmentService.cancelEnrollment(studentId);
+    @DeleteMapping("/enrollments/{enrollmentId}")
+    public void deleteEnrollment(@PathVariable Long enrollmentId, @RequestParam Long userId){
+        enrollmentService.cancelEnrollment(enrollmentId,userId);
     }
 }

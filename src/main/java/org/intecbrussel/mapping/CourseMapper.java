@@ -24,7 +24,7 @@ public class CourseMapper {
          response.setStudentName(
                  course.getEnrollments() != null?
                          course.getEnrollments().stream()
-                                 .map(e-> e.getStudent().getEmail())
+                                 .map(e-> e.getStudent() != null? e.getStudent().getEmail(): "No student")
                                  .collect(Collectors.toList())
                          : new ArrayList<>()
 

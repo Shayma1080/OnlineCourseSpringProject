@@ -1,5 +1,6 @@
 package org.intecbrussel.service;
 
+import jakarta.transaction.Transactional;
 import org.intecbrussel.dto.CourseRequest;
 import org.intecbrussel.dto.CourseResponse;
 import org.intecbrussel.mapping.CourseMapper;
@@ -36,12 +37,12 @@ public class CourseService {
         courseRepository.save(course);
         return CourseMapper.toResponse(course);
     }
-
+    @Transactional
     public CourseResponse updateCourse(Long courseId, CourseRequest request, Long instructorId) {
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(()-> new RuntimeException("course not found"));
 
-        if(course.getEnrollments() != null){
+        if(course.getInstructor() == null){
             throw new RuntimeException("Course has no instructor, cannot update");
         }
 
@@ -57,6 +58,7 @@ public class CourseService {
 
     }
 
+    @Transactional
     public void deleteCourse(Long courseId, Long adminId) {
         User admin = userRepository.findById(adminId)
                 .orElseThrow(()-> new RuntimeException("admin not found"));
@@ -68,6 +70,7 @@ public class CourseService {
         courseRepository.deleteById(courseId);
     }
 
+    @Transactional
     public List<CourseResponse> getAllCourses() {
         return courseRepository.findAll()
                 .stream()
@@ -75,6 +78,7 @@ public class CourseService {
                 .toList();
     }
 
+    @Transactional
     public CourseResponse getCourseById(Long courseId) {
         Course course = courseRepository.getCourseById(courseId);
         return CourseMapper.toResponse(course);

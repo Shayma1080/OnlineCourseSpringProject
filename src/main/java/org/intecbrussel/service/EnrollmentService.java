@@ -1,9 +1,11 @@
 package org.intecbrussel.service;
 
+import jakarta.transaction.Transactional;
 import org.intecbrussel.dto.EnrollmentResponse;
 import org.intecbrussel.mapping.EnrollmentMapper;
 import org.intecbrussel.model.Course;
 import org.intecbrussel.model.Enrollment;
+import org.intecbrussel.model.Role;
 import org.intecbrussel.model.User;
 import org.intecbrussel.repository.CourseRepository;
 import org.intecbrussel.repository.EnrollmentRepository;
@@ -45,6 +47,7 @@ public class EnrollmentService {
         return EnrollmentMapper.toResponse(enrollment);
     }
 
+    @Transactional
     public List<EnrollmentResponse> getAllEnrollments() {
         return enrollmentRepository.findAll()
                 .stream()
@@ -52,6 +55,7 @@ public class EnrollmentService {
                 .toList();
     }
 
+    @Transactional
     public List<EnrollmentResponse> getEnrollmentForStudent(Long studentId) {
         User student = userRepository.findById(studentId)
                 .orElseThrow(() -> new RuntimeException("Student not found"));
@@ -61,6 +65,7 @@ public class EnrollmentService {
                 .toList();
     }
 
+    @Transactional
     public List<EnrollmentResponse> getEnrollmentInstructor(Long instructorId) {
         User instructor = userRepository.findById(instructorId)
                 .orElseThrow(() -> new RuntimeException("Instructor not found"));
@@ -70,10 +75,17 @@ public class EnrollmentService {
                 .map(EnrollmentMapper::toResponse)
                 .toList();
     }
-
-    public void cancelEnrollment(Long enrollmentId) {
+ @Transactional
+    public void cancelEnrollment(Long enrollmentId,Long userId) {
         Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
                 .orElseThrow(() -> new RuntimeException("Enrollment not found"));
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if(!user.getRole().equals(Role.ADMIN) && !enrollment.getStudent().getId().equals(userId)){
+            throw new RuntimeException("Insufficient rights to cancel enrollment");
+        }
 
         enrollmentRepository.delete(enrollment);
     }
