@@ -6,6 +6,7 @@ import org.intecbrussel.dto.RegisterRequest;
 import org.intecbrussel.model.Role;
 import org.intecbrussel.model.User;
 import org.intecbrussel.repository.UserRepository;
+import org.intecbrussel.security.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,9 +16,13 @@ public class AuthService {
     @Autowired
     private final UserRepository userRepository;
 
+    @Autowired
+    private JwtService jwtService;
+
     public AuthService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
+
 
     // Registreren
     public AuthResponse register(RegisterRequest request) {
@@ -61,7 +66,9 @@ public class AuthService {
         response.setEmail(user.getEmail());
         response.setUserName(user.getFirstName() +  " " + user.getLastName());
         response.setRole(user.getRole().name());
-//        response.setToken(null);
+
+        String token = jwtService.generateToken(user);
+        response.setToken(token);
 //        response.setExpiresAt(null);
         return response;
 

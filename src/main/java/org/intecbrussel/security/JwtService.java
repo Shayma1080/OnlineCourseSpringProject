@@ -26,19 +26,29 @@ public class JwtService {
 
     }
 
-    public String extractUsername(String token){
+
+    public String extractEmail(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(SECRET_KEY.getBytes())
                 .build()
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
-
-//         haal email uit token
     }
 
-    public boolean IsTokenValid(String token, User user){
-        return  extractUsername(token).equals(user.getEmail());
-//         Controleer token hoort bij deze user
-    }
+//    public String extractUsername(String token){
+//        return Jwts.parserBuilder()
+//                .setSigningKey(SECRET_KEY.getBytes())
+//                .build()
+//                .parseClaimsJws(token)
+//                .getBody()
+//                .getSubject();
+//
+////         haal email uit token
+//    }
+//
+//    public boolean IsTokenValid(String token, User user){
+//        return  extractUsername(token).equals(user.getEmail());
+////         Controleer token hoort bij deze user
+//    }
 }

@@ -1,5 +1,6 @@
 package org.intecbrussel.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.intecbrussel.dto.AuthResponse;
 import org.intecbrussel.dto.LoginRequest;
 import org.intecbrussel.dto.RegisterRequest;
