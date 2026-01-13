@@ -23,6 +23,7 @@ public class SecurityConfiguratie {
                 .csrf( csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth.requestMatchers("/auth/**")
                         .permitAll() // login en register zijn open
+                        .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN") // alleen admin
                         .requestMatchers("/student/**").hasRole("STUDENT") // alleen student
                         .anyRequest().authenticated()) // alle andere ingelogde vereist

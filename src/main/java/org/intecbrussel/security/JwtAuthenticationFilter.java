@@ -28,6 +28,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter { // filter dr
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
+        String path = request.getServletPath();
+
+        if(path.startsWith("/api/auth")) { // AUTH endpoints niet filteren
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String authHeader = request.getHeader("Authorization"); // wordt auto aangeroepen door Spring
 
         if(authHeader == null || !authHeader.startsWith("Bearer ")){ // geen token gewoon verder, security beslist later
@@ -37,16 +44,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter { // filter dr
         String token = authHeader.substring(7); // Bearer verwijderen
         String email = jwtService.extractEmail(token); // email uit token halen
 
-        User user = userRepository.findByEmail(email).orElseThrow(); // user ophalen uit db
+        if(email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-        UsernamePasswordAuthenticationToken authToken = // user is ingelogd met deze rol
-                new UsernamePasswordAuthenticationToken(
-                        user,
-                        null,
-                        List.of(new SimpleGrantedAuthority("Role_" + user.getRole()))
-                );
+            User user = userRepository.findByEmail(email).orElseThrow(); // user ophalen uit db
 
-        SecurityContextHolder.getContext().setAuthentication(authToken); // Spring weet nu wie je bent
+            UsernamePasswordAuthenticationToken authToken = // user is ingelogd met deze rol
+                    new UsernamePasswordAuthenticationToken(
+                            user,
+                            null,
+                            List.of(new SimpleGrantedAuthority("Role_" + user.getRole().name()))
+                    );
+            SecurityContextHolder.getContext().setAuthentication(authToken); // Spring weet nu wie je bent
+        }
         filterChain.doFilter(request, response); // Controller mag uitgevoerd worden
 
     }

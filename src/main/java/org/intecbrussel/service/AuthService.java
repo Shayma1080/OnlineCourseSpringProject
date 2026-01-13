@@ -8,6 +8,7 @@ import org.intecbrussel.model.User;
 import org.intecbrussel.repository.UserRepository;
 import org.intecbrussel.security.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,6 +19,9 @@ public class AuthService {
 
     @Autowired
     private JwtService jwtService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public AuthService(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -33,7 +37,7 @@ public class AuthService {
 
         User user = new User();
         user.setEmail(request.getEmail());
-        user.setPassword(request.getPassword());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
         user.setUsername(request.getFirstName() + " " + request.getLastName());
@@ -57,7 +61,7 @@ public class AuthService {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("Gebruiker niet gevonden"));
 
-        if(!request.getPassword().equals(user.getPassword())) {
+        if(!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new RuntimeException("Ongeldig wachtwoord");
         }
 
