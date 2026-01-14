@@ -2,7 +2,7 @@ package org.intecbrussel.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-
+@Builder
 @Entity
 @Getter
 @Setter
