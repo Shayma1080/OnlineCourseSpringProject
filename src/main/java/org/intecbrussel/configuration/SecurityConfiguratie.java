@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.intecbrussel.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -21,11 +22,32 @@ public class SecurityConfiguratie {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception { // elk request gaat hier eerst door
         http
                 .csrf( csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> auth.requestMatchers("/auth/**")
-                        .permitAll() // login en register zijn open
+                .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN") // alleen admin
-                        .requestMatchers("/student/**").hasRole("STUDENT") // alleen student
+
+                        // 🛡 Admin endpoints
+                        .requestMatchers(HttpMethod.GET, "/api/admin/users/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/admin/users/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/admin/users/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/admin/enrollments").hasRole("ADMIN")
+
+                        // 👨‍🏫 Instructor endpoints
+                        .requestMatchers(HttpMethod.GET, "/api/instructor/enrollments").hasRole("INSTRUCTOR")
+                        .requestMatchers(HttpMethod.POST, "/api/courses/{instructorId}").hasAnyRole("INSTRUCTOR","ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/courses/{courseId}").hasAnyRole("INSTRUCTOR","ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/courses/{courseId}").hasAnyRole("INSTRUCTOR","ADMIN")
+
+                        // 📚 Courses (open voor GET)
+                        .requestMatchers(HttpMethod.GET, "/api/courses").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/courses/{id}").permitAll()
+
+                        // 📝 Enrollment endpoints
+                        .requestMatchers(HttpMethod.POST, "/api/courses/{studentId}/enroll").hasAnyRole("STUDENT","ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/enrollments/me").hasRole("STUDENT")
+                        .requestMatchers(HttpMethod.GET, "/api/courses/{studentId}/enrollments").hasRole("STUDENT") // nieuw: GET inschrijvingen
+                        .requestMatchers(HttpMethod.DELETE, "/api/enrollments/{enrollmentId}").hasAnyRole("STUDENT","ADMIN")
+
+                        // 🔒 Alles andere vereist login
                         .anyRequest().authenticated()) // alle andere ingelogde vereist
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // JWT = geen sessies, elke request moet token meebrengen

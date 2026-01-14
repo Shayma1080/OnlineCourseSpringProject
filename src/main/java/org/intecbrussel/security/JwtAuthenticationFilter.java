@@ -30,6 +30,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter { // filter dr
 
         String path = request.getServletPath();
 
+        System.out.println("Request path: " + path);
+
         if(path.startsWith("/api/auth")) { // AUTH endpoints niet filteren
             filterChain.doFilter(request, response);
             return;
@@ -52,11 +54,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter { // filter dr
                     new UsernamePasswordAuthenticationToken(
                             user,
                             null,
-                            List.of(new SimpleGrantedAuthority("Role_" + user.getRole().name()))
+                            List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()))
                     );
             SecurityContextHolder.getContext().setAuthentication(authToken); // Spring weet nu wie je bent
         }
         filterChain.doFilter(request, response); // Controller mag uitgevoerd worden
 
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request){
+        return request.getServletPath().startsWith("/api/auth");
     }
 }
