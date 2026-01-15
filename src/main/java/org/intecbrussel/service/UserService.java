@@ -1,6 +1,7 @@
 package org.intecbrussel.service;
 
 import org.intecbrussel.dto.UserResponse;
+import org.intecbrussel.exception.ResourceNotFoundException;
 import org.intecbrussel.mapping.AuthMapper;
 import org.intecbrussel.mapping.UserMapper;
 import org.intecbrussel.model.Role;
@@ -32,7 +33,7 @@ public class UserService {
 
     public UserResponse changeRole(Long userId, Role newRole) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         user.setRole(newRole);
         userRepository.save(user);
@@ -42,7 +43,7 @@ public class UserService {
 
     public void deleteUser(Long userId) {
         if(!userRepository.existsById(userId)) {
-            throw new RuntimeException("User not found");
+            throw new ResourceNotFoundException("User not found");
         }
         userRepository.deleteById(userId);
     }

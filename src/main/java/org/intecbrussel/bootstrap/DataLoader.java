@@ -68,7 +68,7 @@ public class DataLoader implements CommandLineRunner {
         User student1 = new User(
                 null,
                 "Student1",
-                "One",
+                "Student1",
                 "student1",
                 "student1@intec.com",
                 passwordEncoder.encode("student123"),
@@ -78,7 +78,7 @@ public class DataLoader implements CommandLineRunner {
         User student2 = new User(
                 null,
                 "Student2",
-                "Two",
+                "Student2",
                 "student2",
                 "student2@intec.com",
                 passwordEncoder.encode("student123"),
@@ -88,7 +88,7 @@ public class DataLoader implements CommandLineRunner {
         User student3 = new User(
                 null,
                 "Student3",
-                "Three",
+                "Student3",
                 "student3",
                 "student3@intec.com",
                 passwordEncoder.encode("student123"),

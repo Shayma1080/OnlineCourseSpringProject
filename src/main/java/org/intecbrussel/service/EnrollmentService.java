@@ -2,6 +2,9 @@ package org.intecbrussel.service;
 
 import jakarta.transaction.Transactional;
 import org.intecbrussel.dto.EnrollmentResponse;
+import org.intecbrussel.exception.DupblicateEnrollmentException;
+import org.intecbrussel.exception.ResourceNotFoundException;
+import org.intecbrussel.exception.UnauthorizedActionException;
 import org.intecbrussel.mapping.EnrollmentMapper;
 import org.intecbrussel.model.Course;
 import org.intecbrussel.model.Enrollment;
@@ -34,9 +37,14 @@ public class EnrollmentService {
 
     public EnrollmentResponse enrollStudent(Long studentId, Long courseId) {
         User student = userRepository.findById(studentId)
-                .orElseThrow(() -> new RuntimeException("Student not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found"));
         Course course = courseRepository.findById(courseId)
-                .orElseThrow(() -> new RuntimeException("Course not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Course not found"));
+
+        if(enrollmentRepository.existsByStudentAndCourse(student,course)){
+            throw new DupblicateEnrollmentException("Student is already enrolled in this course");
+
+        }
 
         Enrollment enrollment = new Enrollment();
         enrollment.setStudent(student);
@@ -58,7 +66,7 @@ public class EnrollmentService {
     @Transactional
     public List<EnrollmentResponse> getEnrollmentForStudent(Long studentId) {
         User student = userRepository.findById(studentId)
-                .orElseThrow(() -> new RuntimeException("Student not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found"));
         return enrollmentRepository.findByStudent(student)
                 .stream()
                 .map(EnrollmentMapper::toResponse)
@@ -68,7 +76,7 @@ public class EnrollmentService {
     @Transactional
     public List<EnrollmentResponse> getEnrollmentInstructor(Long instructorId) {
         User instructor = userRepository.findById(instructorId)
-                .orElseThrow(() -> new RuntimeException("Instructor not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Instructor not found"));
 
         return enrollmentRepository.findByCourseInstructor(instructor)
                 .stream()
@@ -78,14 +86,15 @@ public class EnrollmentService {
  @Transactional
     public void cancelEnrollment(Long enrollmentId,Long userId) {
         Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
-                .orElseThrow(() -> new RuntimeException("Enrollment not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Enrollment not found"));
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         if(!user.getRole().equals(Role.ADMIN) && !enrollment.getStudent().getId().equals(userId)){
-            throw new RuntimeException("Insufficient rights to cancel enrollment");
+            throw new UnauthorizedActionException("Insufficient rights to cancel enrollment");
         }
+
 
         enrollmentRepository.delete(enrollment);
     }
